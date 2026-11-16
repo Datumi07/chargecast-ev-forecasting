@@ -1,0 +1,12 @@
+column,meaning,role
+com_id,Normalized charging device ID. A site may contain multiple devices.,key
+reported_date,Calendar date from the source timestamp. The timezone is unverified.,key
+observed_session_rows,"Number of session rows after deduplication on this date, including masked days. Reveals the same-day outcome.",audit_only
+report_month,"Calendar month of reported_date. In the session detail table, report_month identifies the source report.",audit_only
+month_session_rows,Device session count in the monthly export. Includes information from later in the month.,audit_only
+coverage_status,"Coverage classification: assumed_observed, unknown_whole_month, uncertain_time_boundary or known_network_gap.",audit_only
+target_valid,True when the target is usable under the documented coverage assumptions.,audit_only
+sessions_target,Daily recorded session count. Missing when the label is masked.,target
+zero_is_assumed,True when a zero is inferred for a date in a device-month with recorded activity.,audit_only
+split,"Chronological split: train before July 2026, validation in July–August and test in September.",evaluation
+recommended_period,True from February 2026 onward. Use with target_valid to select eligible labels.,evaluation

@@ -1,0 +1,132 @@
+[
+  {
+    "file": "APR-26-SESSIONS-NEW-CLEAN.xlsx",
+    "month": "2026-04",
+    "kind": "sessions"
+  },
+  {
+    "file": "Aug-26-SESSIONS-NEW-CLEAN.xlsx",
+    "month": "2026-08",
+    "kind": "sessions"
+  },
+  {
+    "file": "CPS-Uptime-Report-April-2026.xlsx",
+    "month": "2026-04",
+    "kind": "uptime"
+  },
+  {
+    "file": "CPS-Uptime-Report-Aug-2026.xlsx",
+    "month": "2026-08",
+    "kind": "uptime"
+  },
+  {
+    "file": "CPS-Uptime-Report-December-2025.xlsx",
+    "month": "2025-12",
+    "kind": "uptime"
+  },
+  {
+    "file": "CPS-Uptime-Report-February-2026.xlsx",
+    "month": "2026-02",
+    "kind": "uptime"
+  },
+  {
+    "file": "CPS-Uptime-Report-January-2026.xlsx",
+    "month": "2026-01",
+    "kind": "uptime"
+  },
+  {
+    "file": "CPS-Uptime-Report-July-2026a.xlsx",
+    "month": "2026-07",
+    "kind": "uptime"
+  },
+  {
+    "file": "CPS-Uptime-Report-June-2026a.xlsx",
+    "month": "2026-06",
+    "kind": "uptime"
+  },
+  {
+    "file": "CPS-Uptime-Report-March-2026.xlsx",
+    "month": "2026-03",
+    "kind": "uptime"
+  },
+  {
+    "file": "CPS-Uptime-Report-May-2026a.xlsx",
+    "month": "2026-05",
+    "kind": "uptime"
+  },
+  {
+    "file": "CPS-Uptime-Report-November-2025.xlsx",
+    "month": "2025-11",
+    "kind": "uptime"
+  },
+  {
+    "file": "CPS-Uptime-Report-October-2025.xlsx",
+    "month": "2025-10",
+    "kind": "uptime"
+  },
+  {
+    "file": "CPS-Uptime-Report-September-2025.xlsx",
+    "month": "2025-09",
+    "kind": "uptime"
+  },
+  {
+    "file": "DEC-SESSIONS-NEW-CLEAN.xlsx",
+    "month": "2025-12",
+    "kind": "sessions"
+  },
+  {
+    "file": "FEB-26-SESSIONS-NEW-CLEAN.xlsx",
+    "month": "2026-02",
+    "kind": "sessions"
+  },
+  {
+    "file": "JAN-26-SESSIONS-NEW-CLEAN.xlsx",
+    "month": "2026-01",
+    "kind": "sessions"
+  },
+  {
+    "file": "July-26-SESSIONS-NEW-CLEAN.xlsx",
+    "month": "2026-07",
+    "kind": "sessions"
+  },
+  {
+    "file": "June-26-SESSIONS-NEW-CLEAN.xlsx",
+    "month": "2026-06",
+    "kind": "sessions"
+  },
+  {
+    "file": "MAR-26-SESSIONS-NEW-CLEAN.xlsx",
+    "month": "2026-03",
+    "kind": "sessions"
+  },
+  {
+    "file": "MAY-26-SESSIONS-NEW-CLEAN.xlsx",
+    "month": "2026-05",
+    "kind": "sessions"
+  },
+  {
+    "file": "NOV-SESSIONS-NEW-CLEAN.xlsx",
+    "month": "2025-11",
+    "kind": "sessions"
+  },
+  {
+    "file": "OCT-SESSIONS-NEW-CLEAN.xlsx",
+    "month": "2025-10",
+    "kind": "sessions"
+  },
+  {
+    "file": "SEP-SESSIONS-NEW-CLEAN.xlsx",
+    "month": "2025-09",
+    "kind": "sessions"
+  },
+  {
+    "file": "September-2026-Sessions.xlsx",
+    "month": "2026-09",
+    "kind": "sessions"
+  },
+  {
+    "file": "September-Charge-Point-Report.xlsx",
+    "month": "2026-09",
+    "kind": "uptime"
+  }
+]

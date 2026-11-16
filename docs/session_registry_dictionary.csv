@@ -1,0 +1,29 @@
+column,meaning
+com_id,Normalized charging device ID. A site may contain multiple devices.
+start_time,Parsed source timestamp with unverified timezone.
+site_name,Site name as reported. Names may be shared by multiple records.
+charging_type,Charging type as reported. The value alone does not establish power rating.
+connector_id,Connector ID within a device. Values may be missing.
+currency,Currency code as reported.
+energy_kwh,Original energy reading in kWh. Values may be missing or invalid.
+amount,Original monetary amount. Treat same-day values as unavailable at forecast time.
+duration_raw,Original representation of the session duration.
+duration_hours_raw,Duration converted to hours before quality rules are applied.
+source_file,Name of the input workbook for traceability.
+source_row,Excel row number. The header occupies row 1.
+report_month,Reporting month assigned in the input manifest.
+duplicate_candidate,True for a record in a group matched by the deduplication rule.
+energy_invalid,True when energy is negative or missing.
+energy_extreme_review,True when energy exceeds the 500 kWh review threshold.
+duration_invalid,"True when duration is missing, negative or above 365 days."
+duration_long_review,True when duration exceeds the 48-hour review threshold.
+energy_kwh_clean,Energy in kWh with invalid or extreme values set to missing. The original value is retained separately.
+duration_hours_clean,Duration in hours with invalid values set to missing. Eligible rows still contribute to session counts.
+reported_date,Calendar date from the source timestamp.
+report_month_mismatch,True when the source timestamp month differs from the workbook reporting month.
+stable_registry_cohort,True when the device appears in all 13 monthly device reports.
+cpid,Display ID from the device registry. Use com_id as the project device key.
+reliability_pct,Monthly uptime percentage on a 0–100 scale. Availability depends on the report publication date.
+local_authority,Local authority area in the monthly device report.
+host_owner,Host or owner in the monthly device report.
+manufacturer,Manufacturer in the monthly device report.
