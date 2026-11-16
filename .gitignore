@@ -1,37 +1,29 @@
-
-# Python cache
+# Python and environments
 __pycache__/
 *.py[cod]
 .pytest_cache/
 .ipynb_checkpoints/
-
-# Virtual environments
 .venv/
 venv/
 env/
-
-# Environment variables and secrets
 .env
 .env.*
 !.env.example
-
-# Raw and processed datasets
+# Original sources and regenerable session-level data
 data/raw/*
+!data/raw/README.md
 data/processed/*
-!data/raw/.gitkeep
-!data/processed/.gitkeep
-
+!data/processed/README.md
+!data/processed/daily_panel.csv.gz
+!data/processed/registry_monthly.csv
 # Model artifacts
 *.pkl
-*.joblib
 *.pickle
-
-# OS and editor files
+*.joblib
+# OS/editor/temp
 .DS_Store
 Thumbs.db
 .vscode/
 .idea/
-
-# Temporary files
 *.log
 *.tmp

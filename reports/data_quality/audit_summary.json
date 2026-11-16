@@ -1,0 +1,24 @@
+{
+  "input_valid_session_rows": 1063108,
+  "duplicate_copies_removed": 29,
+  "clean_session_rows": 1063079,
+  "stable_registry_ids": 1756,
+  "stable_ids_with_sessions": 1678,
+  "stable_session_rows": 788796,
+  "daily_rows": 662810,
+  "valid_targets": 550274,
+  "assumed_zero_targets": 247818,
+  "coverage_status": {
+    "assumed_observed": 550274,
+    "unknown_whole_month": 63874,
+    "uncertain_time_boundary": 45306,
+    "known_network_gap": 3356
+  },
+  "valid_targets_by_split": {
+    "test": 39564,
+    "train": 428798,
+    "validation": 81912
+  },
+  "validation_checks": "passed: unique keys, continuous calendar, invalid labels masked, nonnegative counts, session/day reconciliation, duplicate rule",
+  "duration_validation": "Excel serial dates decoded using openpyxl.to_excel; >24h preserved, epoch edge cases checked"
+}

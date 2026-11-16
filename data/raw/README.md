@@ -1,0 +1,2 @@
+# Original sources
+Place the 26 original XLSX files listed in `config/input_manifest.json` here, directly (no extra nested folder). They come from the previously downloaded ChargeCast/Data/Raw directory. Raw files are not bundled or committed. SHA256 fingerprints of the versions used are in `reports/data_quality/ingestion_audit.csv`. August 2024 comparison files are not training inputs for this release.

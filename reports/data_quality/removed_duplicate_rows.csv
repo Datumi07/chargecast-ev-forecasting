@@ -1,0 +1,30 @@
+com_id,start_time,site_name,charging_type,connector_id,currency,energy_kwh,amount,duration_raw,duration_hours_raw,source_file,source_row,report_month,duplicate_candidate
+52080,2026-04-25 10:43:20,"Crownpoint Road Sports Centre, Glasgow",ac,1,gbp,15.0,7.0,00:00:00,0.0,APR-26-SESSIONS-NEW-CLEAN.xlsx,56411,2026-04,True
+UC25012,2025-12-21 07:48:24,"East London Street, Edinburgh",rapid,1,gbp,0.0,0.0,0 days 00:00:00,0.0,DEC-SESSIONS-NEW-CLEAN.xlsx,32221,2025-12,True
+UC25012,2025-12-20 16:21:46,"East London Street, Edinburgh",rapid,1,gbp,0.0,0.0,0 days 00:00:00,0.0,DEC-SESSIONS-NEW-CLEAN.xlsx,33065,2025-12,True
+UC25012,2025-12-20 09:14:23,"East London Street, Edinburgh",rapid,1,gbp,0.0,0.0,0 days 00:00:00,0.0,DEC-SESSIONS-NEW-CLEAN.xlsx,34756,2025-12,True
+UC25012,2025-12-19 12:17:30,"East London Street, Edinburgh",rapid,1,gbp,0.0,0.0,0 days 00:00:00,0.0,DEC-SESSIONS-NEW-CLEAN.xlsx,36910,2025-12,True
+60081,2025-12-12 17:44:56,Maybole Inches Close,ac,2,gbp,45.5,22.75,0 days 00:00:00,0.0,DEC-SESSIONS-NEW-CLEAN.xlsx,57337,2025-12,True
+60081,2025-12-06 09:06:18,Maybole Inches Close,ac,2,gbp,48.52,24.26,0 days 00:00:00,0.0,DEC-SESSIONS-NEW-CLEAN.xlsx,77287,2025-12,True
+61981,2025-12-01 14:53:46,Chalmers Arcade car park Girvan,ac,1,gbp,25.2,12.6,0 days 00:00:00,0.0,DEC-SESSIONS-NEW-CLEAN.xlsx,92316,2025-12,True
+60137,2026-02-13 07:57:35,Baird Street,ac,1,gbp,12.02,5.77,0 days 00:00:00,0.0,FEB-26-SESSIONS-NEW-CLEAN.xlsx,34749,2026-02,True
+52730,2026-01-15 17:05:09,Albert Avenue,ac,2,gbp,1.24,1.5,0 days 00:00:00,0.0,JAN-26-SESSIONS-NEW-CLEAN.xlsx,47672,2026-01,True
+60654,2026-07-12 15:41:24,"The Temple Car Park, Lower Largo",ac,1,gbp,3.66,1.46,00:32:15,0.5375,July-26-SESSIONS-NEW-CLEAN.xlsx,19805,2026-07,True
+52053,2026-07-15 12:16:12,"Hallam Road Car Park, Stenhousemuir",ac,2,gbp,0.49,0.0,1843-06-17 11:43:47,-495588.2702777778,July-26-SESSIONS-NEW-CLEAN.xlsx,24616,2026-07,True
+60649,2026-07-15 17:11:52,"Station Road car park B, Auchtermuchty",ac,1,gbp,43.301,17.32,1843-06-17 06:48:07,-495593.1980555556,July-26-SESSIONS-NEW-CLEAN.xlsx,25278,2026-07,True
+12944,2026-07-30 11:57:40,Stirling Street - Galashiels,ac,2,gbp,0.0,0.0,00:00:00,0.0,July-26-SESSIONS-NEW-CLEAN.xlsx,51782,2026-07,True
+60883,2026-06-08 08:47:02,Bridge Street Car park,ac,1,gbp,6.8,0.0,1843-07-24 15:12:57,-494696.7841666667,June-26-SESSIONS-NEW-CLEAN.xlsx,13967,2026-06,True
+60654,2026-06-16 15:24:07,"The Temple Car Park, Lower Largo",ac,1,gbp,7.96,3.18,1843-07-16 08:35:52,-494895.40222222224,June-26-SESSIONS-NEW-CLEAN.xlsx,30101,2026-06,True
+EFA50757,2026-03-04 14:53:49,"Monomer Car Park, Killin",rapid,2,gbp,1.55,2.0,0 days 00:02:48,0.04666666666666667,MAR-26-SESSIONS-NEW-CLEAN.xlsx,8892,2026-03,True
+60142,2026-03-14 13:58:45,Springkerse Park and Ride,ac,1,gbp,3.97,2.0,-20527 days +10:01:14,-492637.97944444447,MAR-26-SESSIONS-NEW-CLEAN.xlsx,34068,2026-03,True
+60125,2026-05-18 14:21:25,TotalEnergies House,ac,1,gbp,16.278,0.0,1843-08-14 09:38:34,-494198.3572222222,MAY-26-SESSIONS-NEW-CLEAN.xlsx,36161,2026-05,True
+UC25189,2026-05-30 15:36:04,Fettes Avenue,rapid,1,gbp,0.0,0.0,00:00:00,0.0,MAY-26-SESSIONS-NEW-CLEAN.xlsx,61521,2026-05,True
+UC25189,2026-05-30 16:26:51,Fettes Avenue,rapid,1,gbp,0.0,0.0,00:00:00,0.0,MAY-26-SESSIONS-NEW-CLEAN.xlsx,61577,2026-05,True
+UC25012,2026-05-30 17:01:16,"East London Street, Edinburgh",rapid,1,gbp,0.0,0.0,00:00:00,0.0,MAY-26-SESSIONS-NEW-CLEAN.xlsx,61612,2026-05,True
+UC25189,2026-05-30 17:46:26,Fettes Avenue,rapid,1,gbp,0.0,0.0,00:00:00,0.0,MAY-26-SESSIONS-NEW-CLEAN.xlsx,61643,2026-05,True
+52227,2025-11-28 09:11:39,Tayport Harbour,ac,2,gbp,16.47,6.59,0 days 00:00:00,0.0,NOV-SESSIONS-NEW-CLEAN.xlsx,9128,2025-11,True
+61745,2025-11-12 00:32:48,Glenfruin Road,ac,1,gbp,48.13,19.25,0 days 00:00:00,0.0,NOV-SESSIONS-NEW-CLEAN.xlsx,69647,2025-11,True
+61744,2025-10-23 17:41:33,Reidvale Street,ac,,gbp,24.65,10.86,,,OCT-SESSIONS-NEW-CLEAN.xlsx,40062,2025-10,True
+70056,2025-10-07 12:36:33,"Fife Council, North End Depot",ac,,gbp,6.79,0.0,,,OCT-SESSIONS-NEW-CLEAN.xlsx,111529,2025-10,True
+53254,2025-09-23 06:47:07,Wishaw Sports Centre,ac,,gbp,4.799,1.92,,,SEP-SESSIONS-NEW-CLEAN.xlsx,34376,2025-09,True
+53239,2026-09-08 19:06:03,"The Braes Car Park 2, Saltcoats",rapid,3,gbp,9.65,6.75,1843-04-23 04:53:56,-496915.1011111111,September-2026-Sessions.xlsx,13609,2026-09,True
