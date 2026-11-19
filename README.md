@@ -4,7 +4,10 @@
 
 ChargeCast forecasts the number of recorded charging sessions starting on the next day at an individual charging device (`com_id`) in the ChargePlace Scotland (CPS) network. We investigate whether a shared model trained across devices improves forecasting over device-specific models under simulated **30-day and 90-day history windows** before each forecast date. The dataset spans 395 calendar days, providing multiple forecast dates for chronological evaluation.
 
-The current release contains a reproducible cleaning pipeline and a cleaned daily panel. **Forecasting models, evaluation results and an interactive application have not yet been implemented.**
+The current release contains a reproducible cleaning pipeline, a cleaned daily panel and a verified feature engineering pipeline for 30-day and 90-day histories. **Forecasting models, evaluation results and an interactive application have not yet been implemented.**
+
+Feature engineering: run `python src/check_features.py`, then `python src/build_features.py`.
+See [feature definitions and model handoff](docs/feature_engineering.md) for predictor allowlists, missing-history handling, forecast timing and eligibility rules.
 
 ## Research questions
 
@@ -148,6 +151,7 @@ Individual responsibilities will be finalised during project planning.
 
 - Research scope defined.
 - Clean v1 data, reproducible preparation code and quality documentation supplied.
-- EDA, feature engineering, model comparisons and pilot implementation are next.
+- Feature engineering implemented with calendar lags, historical statistics, coverage reports and leakage checks.
+- Model comparisons and pilot implementation are next.
 
 This repository is maintained for DATA2010 at VinUniversity. Cite CPS as the original data source and describe the cohort, inferred zeros, exclusions and timestamp limitations in the final report. Public access alone is not a substitute for checking source reuse terms before wider redistribution.
