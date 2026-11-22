@@ -88,8 +88,9 @@ X_train, y_train = train[columns], train["sessions_target"]
 For a missing-aware model such as LightGBM, the complete-case condition can be
 omitted. Do not fill missing session history with zero. This example selects the
 training partition only; rolling retraining still requires the date restrictions
-below. There is no model training implementation in the current repository, so
-compatibility is verified at the numeric feature/label interface.
+below. Group A now implements daily rolling Poisson fits in `src/run_poisson.py`;
+see the Group A section of README.md for the selected predictor subset and
+strict origin-specific history bounds.
 
 Preserve the supplied chronological splits: February–June training,
 July–August validation, September test. Earlier observations may supply history

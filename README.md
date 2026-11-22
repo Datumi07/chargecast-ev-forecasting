@@ -4,7 +4,7 @@
 
 ChargeCast forecasts the number of recorded charging sessions starting on the next day at an individual charging device (`com_id`) in the ChargePlace Scotland (CPS) network. We investigate whether a shared model trained across devices improves forecasting over device-specific models under simulated **30-day and 90-day history windows** before each forecast date. The dataset spans 395 calendar days, providing multiple forecast dates for chronological evaluation.
 
-The current release contains a reproducible cleaning pipeline, a cleaned daily panel and a verified feature engineering pipeline for 30-day and 90-day histories. **Forecasting models, evaluation results and an interactive application have not yet been implemented.**
+The current release contains a reproducible cleaning pipeline, a cleaned daily panel and a verified feature engineering pipeline for 30-day and 90-day histories. **Group A Poisson models and evaluation are implemented; the interactive application remains planned.**
 
 Feature engineering: run `python src/check_features.py`, then `python src/build_features.py`.
 See [feature definitions and model handoff](docs/feature_engineering.md) for predictor allowlists, missing-history handling, forecast timing and eligibility rules.
@@ -152,6 +152,83 @@ Individual responsibilities will be finalised during project planning.
 - Research scope defined.
 - Clean v1 data, reproducible preparation code and quality documentation supplied.
 - Feature engineering implemented with calendar lags, historical statistics, coverage reports and leakage checks.
-- Model comparisons and pilot implementation are next.
+- Group A local/shared Poisson experiments implemented; see the Group A section. Cross-family comparisons and pilot implementation remain.
 
 This repository is maintained for DATA2010 at VinUniversity. Cite CPS as the original data source and describe the cohort, inferred zeros, exclusions and timestamp limitations in the final report. Public access alone is not a substitute for checking source reuse terms before wider redistribution.
+
+## Group A: Poisson regression
+
+Implemented local (one model per device) and shared Poisson regression, each
+with 30/90 calendar days of history. Results: `reports/group_a/results.txt`;
+row-level predictions: `reports/group_a/forecasts.csv`.
+
+```powershell
+# Exact environment used for this delivery (uv installed):
+uv venv --python 3.14 .venv
+uv pip install --python .venv/Scripts/python.exe -r requirements-group-a.txt
+.venv\Scripts\python.exe src/check_features.py
+.venv\Scripts\python.exe src/check_poisson.py
+.venv\Scripts\python.exe src/run_poisson.py
+# Validation only, without overwriting the final delivery:
+.venv\Scripts\python.exe src/run_poisson.py --validation-only --output reports/group_a_validation
+```
+
+The version snapshot records the actual Python 3.14 environment used here;
+`reports/group_a/settings.json` records runtime versions and the input SHA256.
+Run from the repository root. `--input` and `--output` override default paths.
+The full run fits hundreds of thousands of small models; allow several minutes.
+
+Protocol and final settings:
+
+- Forecast July-August validation and September test daily; refit every forecast
+  day. February-June is the initial training partition. Earlier validation/test
+  labels enter subsequent daily fits only after their dates have passed.
+- For origin D, use only [D-H, D-1], H=30/90. The first seven calendar days
+  supply context only; training examples start at D-H+7. Both training labels
+  and their historical predictors therefore stay inside the same history limit.
+  The maximum label sample is 23/83 days per device, before missing exclusions.
+- Predictors: `weekday_sin`, `weekday_cos`, `lag_7`, `rolling_mean_7`.
+  Seven-day means ignore unavailable labels without compressing the calendar;
+  lag 7 must exist. Require a complete selected predictor vector, not all 26
+  available features. Missing labels/features are never imputed with zero.
+- StandardScaler is fitted separately on each fit's training rows; shared models
+  pool devices without device-ID encoding. Device identity enters through its
+  own lag and rolling average. Both scopes use precisely the same feature rules.
+- PoissonRegressor uses an intercept, L2 alpha candidates 0.1/1.0, max_iter=300,
+  tol=1e-6. Select lowest matched-row validation MAE separately per scope/window,
+  breaking ties toward 0.1. All four settings are saved before any test fit.
+  No test tuning. Restrict numerical libraries to one thread per worker for reproducibility.
+  Four independent experiments run concurrently by default; use `--jobs 1` for
+  sequential execution on machines with limited memory.
+- Require at least seven usable training examples. All-zero training labels
+  have an exact-zero boundary prediction rather than an invented positive count.
+  Failed/insufficient fits leave predictions missing with an explicit status;
+  no fallback model silently replaces the local model.
+- Export every valid recommended validation/test device-day for every
+  configuration, including unavailable predictions. Preserve IDs as strings when
+  loading CSV (`dtype={'com_id': 'string'}`). `status` supplements the eight
+  requested columns. Do not round the expected session counts before scoring.
+- `metrics.csv` reports available rows and the shared/local intersection for
+  each history/split. Compare sharing on `population=matched`; do not compare
+  differently filtered populations. MAE/RMSE exclude missing predictions.
+  `n_excluded` counts otherwise scorable valid-label rows without predictions
+  (or outside the intersection), not masked target days.
+- High usage means y_true >= the pooled 90th percentile of valid February-June
+  training counts. Threshold is frozen before validation/test. Report high-day
+  mean positive shortfall max(y_true-y_pred,0) and underprediction frequency.
+  This threshold is a proposed common convention; the other group should use
+  the same frozen definition before cross-model comparison.
+
+Delivery files also include `validation_trials.csv`, `coverage.csv`,
+`fit_audit.csv` (device/date, calendar bounds, usable training count and reason),
+`input_coverage.csv` (including masked targets), and `sample_forecasts.csv`.
+`validation_*_forecasts.csv` retain each alpha candidate for review. Forecasts and audit files contain only selected
+configurations; trials retain validation scores for both alpha candidates.
+`check_poisson.py` independently rebuilds truncated histories, verifies future
+invariance, matched scoring, zero-only/insufficient history, and checks delivered
+actuals/metrics when delivery files exist.
+
+Independent review still requires real teammates: no second-author commits or
+Group B reproduction are claimed. Send the validation command above and compare
+sample rows, input hash and settings with Group B. Baseline and LightGBM runs
+remain with their assigned owners. No GitHub push is part of this local run.
