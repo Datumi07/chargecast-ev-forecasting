@@ -40,6 +40,12 @@ python team_b_lightgbm/training/fixed_train/evaluate_final_test.py
 
 This script uses a locally tuned configuration in `reports/modeling/` when present, otherwise the bundled configuration. The full LightGBM refit has not been independently reproduced in the integration review. For the published forecast scores, run `python scripts/evaluate.py` from `team_b_lightgbm/`.
 
+## Report figures
+
+Run `python src/plot_results.py` to generate nine figures in PNG/PDF with CSV source tables. See the [figure guide](reports/figures/README.md) for interpretation, populations and limitations.
+
+![Matched model errors](reports/figures/05_model_comparison.png)
+
 ## Research questions and current findings
 
 1. Do models improve on historical baselines? Compare three model families with lag-7 and seven-day-average forecasts on identical September device-day keys.

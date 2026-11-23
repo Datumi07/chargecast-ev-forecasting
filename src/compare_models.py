@@ -7,7 +7,7 @@ ROOT = Path(__file__).resolve().parents[1]
 KEYS = ["com_id", "reported_date"]
 
 
-def main():
+def load_matched_forecasts():
     poisson = pd.read_csv(ROOT / "reports/poisson/forecasts.csv", dtype={"com_id": str})
     poisson = poisson.loc[(poisson.split == "test") & (poisson.history_days == 90) &
                           (poisson.training_scope == "device_specific")]
@@ -31,6 +31,11 @@ def main():
         else:
             combined = combined.merge(usable, on=KEYS, suffixes=("", "_check"), validate="one_to_one")
             assert combined.y_true.eq(combined.pop("y_true_check")).all()
+    return combined, coverage, list(candidates)
+
+
+def main():
+    combined, coverage, candidates = load_matched_forecasts()
     results = []
     for name in candidates:
         error = combined[name] - combined.y_true
