@@ -11,7 +11,7 @@ Mục tiêu:
 - Tuyệt đối KHÔNG chạm vào tập Test (tháng 9) trong giai đoạn này.
 
 Cách chạy từ thư mục gốc của repo:
-    python src/train_lgbm_shared.py
+    python team_b_lightgbm/training/fixed_train/train_lgbm_shared.py
 """
 
 from __future__ import annotations

@@ -1,36 +1,86 @@
-# ChargeCast: EV Charging Session Forecasting
+# ChargeCast — Next-day EV charging session forecasts
 
-**DATA2010 — Data Science Programming | VinUniversity**
+DATA2010 · VinUniversity
 
-ChargeCast forecasts the number of recorded charging sessions starting on the next day at an individual charging device (`com_id`) in the ChargePlace Scotland (CPS) network. We investigate whether a shared model trained across devices improves forecasting over device-specific models under simulated **30-day and 90-day history windows** before each forecast date. The dataset spans 395 calendar days, providing multiple forecast dates for chronological evaluation.
+Predict recorded session starts for each ChargePlace Scotland charging device on the next day. The cleaned panel contains 1,678 devices across September 2025–September 2026. Main experiments evaluate July–August validation and September test forecasts in 2026.
 
-This branch includes the reproducible cleaning pipeline, cleaned daily panel and Group A's rolling Poisson forecasts. See the [Poisson handoff](reports/poisson/README.md) for the run command, forecast CSV, evaluation and worked examples.
+## Start here
 
-## Research questions
+| Task | Entry point |
+|---|---|
+| Inspect cleaning and EDA | [Notebook](notebooks/01_data_quality_and_eda.ipynb) |
+| Understand coverage and inferred zeros | [Cleaning methodology](docs/data_cleaning.md) |
+| Generate canonical features | [Feature definitions](docs/feature_engineering.md) |
+| Review primary shared/local Poisson | [Poisson experiment](reports/poisson/README.md) |
+| Review alternative four-feature Poisson | [Alternative results](reports/group_a/results.txt) |
+| Review LightGBM | [Team B guide](team_b_lightgbm/README.md) |
+| Review Ridge | [Ridge guide](reports/ridge/README.md) |
+| Compare three models and two baselines | [Matched scores](reports/comparison/metrics.csv) |
 
-1. Can forecasting models outperform simple historical baselines?
-2. Does shared learning outperform device-specific learning under identical 30-day and 90-day history windows?
-3. How do errors and underprediction change on high-usage days?
+## Run from the repository root
 
-The target measures **recorded sessions**, not all latent charging demand, charger availability or waiting time. A device is not necessarily a separate physical site. Site-level aggregation requires a verified device-to-site mapping.
+Use Python 3.10 or later.
 
-## Dataset and current release
+```bash
+python -m pip install -r requirements.txt
+python -m unittest discover -s tests
+python src/check_features.py
+python src/build_features.py
+python src/run_ridge.py
+python src/compare_models.py
+```
 
-**Source:** [ChargePlace Scotland — Monthly Charge Point Performance](https://chargeplacescotland.org/monthly-charge-point-performance/)
+The comparison reads the committed forecasts. Refit the primary Poisson experiment with `python src/poisson_forecast.py`. See each experiment's guide for its training protocol.
 
-| Item | Clean v1 |
-|---|---:|
-| Supplied reporting period | September 2025 – September 2026 |
-| Devices present in all 13 monthly device reports | 1,756 |
-| Devices with matching sessions, included in the daily panel | 1,678 |
-| Retained session records in this cohort | 788,796 |
-| Daily panel rows, including unavailable labels | 662,810 |
-| Usable target rows under documented coverage assumptions | 550,274 |
-| Zero targets inferred under those assumptions | 247,818 |
+For fixed LightGBM, generate canonical features first, then run:
 
-The complete cleaned session table also retains devices outside the main cohort. The 78 registry devices with no matching sessions remain in the audit rather than receiving fabricated zero histories.
+```bash
+python team_b_lightgbm/training/fixed_train/evaluate_final_test.py
+```
 
-**Recommended initial experiment:** February–September 2026. Earlier months remain available for EDA and sensitivity analysis because their detailed session counts do not reconcile with published monthly totals.
+This script uses a locally tuned configuration in `reports/modeling/` when present, otherwise the bundled configuration. The full LightGBM refit has not been independently reproduced in the integration review. For the published forecast scores, run `python scripts/evaluate.py` from `team_b_lightgbm/`.
+
+## Research questions and current findings
+
+1. Do models improve on historical baselines? Compare three model families with lag-7 and seven-day-average forecasts on identical September device-day keys.
+2. Does pooling devices help with 30/90 days of training history? The primary Poisson experiment finds lower September errors for local models at both lengths. Its shared specification retains a device-specific activity offset.
+3. How do errors change on busy days? Use at least four recorded sessions, the training-period threshold. Report busy-day RMSE, signed bias and underprediction rate.
+
+### Matched September results
+
+All five methods are scored on the same 36483 device-days.
+
+| Model | MAE | RMSE | Busy RMSE | Busy bias | Busy underprediction |
+|---|---:|---:|---:|---:|---:|
+| poisson_local90 | 0.8049 | 1.1779 | 2.6617 | -1.7008 | 81.8% |
+| ridge | 0.7933 | 1.1582 | 2.5916 | -1.7341 | 84.3% |
+| lightgbm_fixed | 0.7785 | 1.1304 | 2.5328 | -1.6164 | 82.7% |
+| lag7 | 0.9382 | 1.5531 | 3.1956 | -1.5315 | 67.6% |
+| mean7 | 0.8012 | 1.2028 | 2.6427 | -1.6439 | 80.8% |
+
+Bias is prediction minus actual. Conditioning on high realized counts selects upward surprises. These busy-day results describe conditional errors. Compare forecast coverage separately in [coverage.csv](reports/comparison/coverage.csv).
+
+## Experiment definitions
+
+| Experiment | Model fit | Historical features |
+|---|---|---|
+| Primary Poisson | Daily refit on previous 30/90 calendar days | Recent device activity offset and weekday effect, smoothed using validation |
+| Alternative Poisson | Daily refit on previous 30/90 calendar days | Four predictors; short local histories produce extreme validation forecasts |
+| Team B primary LightGBM | One fit on February–August | Canonical 30-day feature lookback; L2 objective |
+| Ridge | One fit on previous 90 days before each evaluation period | Weekday indicators, lags 1/7/14/28 and trailing means 7/28/90; alpha 10 |
+
+Ridge and Poisson settings were selected using validation. The team had already inspected September during development. Team B's final configuration choice also considered September scores. Treat the table as a retrospective comparison. Different training schedules and feature sets make this a comparison of complete forecasting pipelines.
+
+## Data and layout
+
+- `data/raw/` describes original workbooks, excluded from Git.
+- `data/processed/` contains the daily panel and registry. Generated feature tables remain local.
+- `src/` contains cleaning, feature creation, model and comparison entry points.
+- `notebooks/` contains EDA.
+- `reports/` contains audits and model outputs.
+- `team_b_lightgbm/` retains the submitted LightGBM code, forecasts and evaluation.
+
+Rebuild the panel with `python src/prepare_data.py --raw /path/to/workbooks`. Exact input filenames are in `config/input_manifest.json`. Download the original workbooks from [ChargePlace Scotland](https://chargeplacescotland.org/monthly-charge-point-performance/). See the [daily dictionary](docs/data_dictionary.csv) and [session/registry dictionary](docs/session_registry_dictionary.csv).
 
 ### Essential limitations
 
@@ -43,124 +93,15 @@ The complete cleaned session table also retains devices outside the main cohort.
 
 See [the cleaning methodology](docs/data_cleaning.md), [daily data dictionary](docs/data_dictionary.csv) and [session/registry dictionary](docs/session_registry_dictionary.csv).
 
-## Repository layout
 
-| Path | Purpose |
-|---|---|
-| `config/input_manifest.json` | Exact filenames, reporting months and source types for 26 input workbooks |
-| `data/raw/` | Original XLSX inputs, excluded from Git |
-| `data/processed/daily_panel.csv.gz` | Main continuous device-day panel, included in Git |
-| `data/processed/registry_monthly.csv` | Monthly metadata for the stable cohort, included in Git |
-| `data/processed/sessions_clean.csv.gz` | Full session-level output, bundled in delivery ZIP but excluded from Git |
-| `src/prepare_data.py` | Rebuild cleaning outputs from original workbooks |
-| `src/load_example.py` | Load data and demonstrate time-safe lag creation |
-| `src/poisson_forecast.py` | Fit and evaluate the four Group A Poisson configurations |
-| `reports/poisson/` | Row-level forecasts, fit failures, validation grid, results and reproduction instructions |
-| `docs/` | Cleaning decisions and column dictionaries |
-| `reports/data_quality/` | Audit counts, excluded IDs, removed duplicates and input fingerprints |
+## Remaining deliverables
 
-## Quick start
+- Independently reproduce complete model training from the cleaned panel.
+- Complete the historical device-selection pilot and final report.
+- Document permitted AI assistance according to the course requirements.
 
-Run commands from the repository root with Python 3.10 or newer:
+The historical panel supports recorded-session forecasting. Transfer to Vietnam requires local data and validation.
 
-```bash
-python -m venv .venv
-# Windows PowerShell:
-.venv\Scripts\Activate.ps1
-# macOS/Linux instead:
-# source .venv/bin/activate
-python -m pip install -r requirements.txt
-python src/load_example.py
-```
+## Team
 
-The example reads the supplied panel, creates lag-1 and lag-7 using the continuous calendar, and reports usable rows for each split. It does **not** train a model.
-
-```python
-import pandas as pd
-
-panel = pd.read_csv(
-    "data/processed/daily_panel.csv.gz",
-    dtype={"com_id": "string", "sessions_target": "Int64"},
-    parse_dates=["reported_date"],
-).sort_values(["com_id", "reported_date"])
-
-# Create historical features BEFORE removing unavailable target dates.
-panel["lag_7"] = panel.groupby("com_id")["sessions_target"].shift(7)
-usable = panel["recommended_period"] & panel["target_valid"]
-```
-
-### Rebuild from raw workbooks
-
-Place the files listed in `config/input_manifest.json` directly under `data/raw/`, or provide the path to the original `ChargeCast/Data/Raw` folder:
-
-```bash
-python src/prepare_data.py
-# Alternative source directory:
-python src/prepare_data.py --raw /path/to/ChargeCast/Data/Raw
-```
-
-This regenerates processed data and audit tables without editing the raw sources. The original workbooks are not included in this repository delivery. Their SHA256 fingerprints are recorded in `reports/data_quality/ingestion_audit.csv`.
-
-## Cleaning policy
-
-- Standardize identifiers and schemas; exclude rows without a usable device ID or start time.
-- Remove duplicate copies using the declared composite key and retain an audit of removed rows.
-- Preserve zero-energy sessions for the recorded-session target. Flag invalid energy/duration values without automatically deleting the session.
-- Intersect monthly device registries, then aggregate sessions by device and reported date.
-- Retain a continuous calendar. Unreliable labels remain missing rather than becoming zero or being interpolated.
-- Keep monthly reliability and ticket information out of the initial predictive feature set. Information published after a forecast origin must not be used at that origin.
-
-The pipeline asserts unique daily keys, nonnegative available targets, masked unavailable targets, continuous calendar size and reconciliation between session counts and the daily panel. These checks establish internal consistency, not source completeness.
-
-## Modelling and evaluation plan
-
-| Partition | Recommended period |
-|---|---|
-| Train | February–June 2026 |
-| Validation | July–August 2026 |
-| Test | September 2026 |
-
-- Start with same-weekday-last-week and historical-average baselines.
-- Group A evaluated device-specific and shared Poisson regression. Comparison with LightGBM and the baselines remains pending.
-- Compare shared and local models using identical forecast dates, devices and 30/90-day calendar windows. Define the rolling retraining schedule before experimentation.
-- Use chronological evaluation; never random-split device-day rows.
-- Compute lag/rolling statistics only from prior dates. Keep missing history visible and report coverage requirements.
-- Report MAE, RMSE and high-usage underprediction. Define high-usage thresholds using training history, not test outcomes.
-- Evaluate competing models on the same eligible rows; report the number of devices/days retained.
-
-**Do not automatically use every column as a predictor.** `observed_session_rows` reveals the same-day outcome. `month_session_rows` uses the entire reporting month. Coverage flags and target-validity fields are retrospective audit controls, not forecast-time features. `sessions_target` is the target.
-
-## Planned pilot and optional extensions
-
-The core pilot will let users select a device and inspect historical usage and a next-day forecast. Two-day forecasting needs separate horizon evaluation. A chatbot may later query model outputs; RAG is optional for retrieving station documentation. Daily session counts alone cannot support guaranteed recommendations about available connectors or waiting times.
-
-Findings may inform future methodological work in Vietnam, but this dataset does not establish predictive performance in Vietnam.
-
-## Team members
-
-- Dang Tuan Minh
-- Nguyen Quy Tu
-- Nguyen Dinh Nam Khanh
-- Ngo Van Thang
-- Bui Anh Minh
-
-Individual responsibilities will be finalised during project planning.
-
-## Project status and academic context
-
-- Research scope defined.
-- Clean v1 data, reproducible preparation code and quality documentation supplied.
-- Group A's Poisson runs are complete. Cross-group comparisons and pilot implementation remain pending.
-
-This repository is maintained for DATA2010 at VinUniversity. Cite CPS as the original data source and describe the cohort, inferred zeros, exclusions and timestamp limitations in the final report. Public access alone is not a substitute for checking source reuse terms before wider redistribution.
-
-
-## Integrated model results
-
-- [Primary Poisson experiment](reports/poisson/README.md): recent device activity as an offset and shared or local weekday effects, with smoothing chosen on validation.
-- [Alternative Poisson experiment](reports/group_a/results.txt): four-predictor PoissonRegressor with shared or device-specific fitting. The short local window has extreme validation forecasts that remain included in the scores.
-- [Feature pipeline](docs/feature_engineering.md): run `python src/build_features.py` from the repository root.
-- [Ridge experiment](reports/ridge/README.md): validation selection and matched baseline comparisons. Run `python src/run_ridge.py`.
-- [LightGBM experiment](team_b_lightgbm/README.md): fixed and daily-refit forecasts.
-
-The two Poisson implementations are separate experiments. Recompute cross-family scores on identical device-date keys before placing them in the final report.
+Dang Tuan Minh · Nguyen Quy Tu · Nguyen Dinh Nam Khanh · Ngo Van Thang · Bui Anh Minh

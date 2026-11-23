@@ -16,7 +16,7 @@ Quy trình 3 bước có giả thuyết rõ ràng (chỉ dùng Validation tháng
    tốt nhất vào `reports/modeling/best_lgbm_config.json` cho Chặng 5.
 
 Cách chạy từ thư mục gốc của repo:
-    python src/tune_lgbm.py
+    python team_b_lightgbm/training/fixed_train/tune_lgbm.py
 """
 
 from __future__ import annotations

@@ -1,0 +1,6 @@
+model,available_rows
+poisson_local90,39550
+ridge,39564
+lightgbm_fixed,39564
+lag7,36483
+mean7,39429

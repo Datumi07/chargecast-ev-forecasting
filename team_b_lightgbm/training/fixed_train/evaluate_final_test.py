@@ -18,7 +18,7 @@ Quy ước chống rò rỉ dữ liệu:
 - reports/modeling/figures/03_high_usage_error_analysis.png
 
 Cách chạy từ thư mục gốc của repo:
-    python src/evaluate_final_test.py
+    python team_b_lightgbm/training/fixed_train/evaluate_final_test.py
 """
 
 from __future__ import annotations
@@ -232,16 +232,22 @@ def plot_usage_buckets(bucket_df: pd.DataFrame, out_path: Path) -> None:
 def main() -> None:
     cfg_path = Path("reports/modeling/best_lgbm_config.json")
     if not cfg_path.exists():
+        cfg_path = Path(__file__).with_name("best_lgbm_config.json")
+    if not cfg_path.exists():
         raise FileNotFoundError(
-            f"Không tìm thấy {cfg_path}. Hãy chạy `python src/tune_lgbm.py` trước."
+            f"Không tìm thấy {cfg_path}. Hãy chạy `python team_b_lightgbm/training/fixed_train/tune_lgbm.py` trước."
         )
 
     with open(cfg_path, "r", encoding="utf-8") as f:
         best_cfg = json.load(f)
 
     best_params = best_cfg["params"]
-    best_iter_90 = int(best_cfg["validation_90d_all_eligible"]["best_iteration"])
-    best_iter_30 = int(best_cfg["validation_30d_best_iteration"])
+    if "best_iteration_90d" in best_cfg:
+        best_iter_90 = int(best_cfg["best_iteration_90d"])
+        best_iter_30 = int(best_cfg["best_iteration_30d"])
+    else:
+        best_iter_90 = int(best_cfg["validation_90d_all_eligible"]["best_iteration"])
+        best_iter_30 = int(best_cfg["validation_30d_best_iteration"])
 
     # Cấu hình mặc định Chặng 3A (để so trực tiếp trên Test)
     default_params = {

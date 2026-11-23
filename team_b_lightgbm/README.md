@@ -70,7 +70,6 @@ Team B prioritizes **overall RMSE** and **high-usage ("busy day") accuracy** bec
 ```text
 team_b_lightgbm/
 ├── README.md                         # Overview, model selection, results, and reproduction
-├── GITHUB_BRANCH_GUIDE.md            # Step-by-step Git branch & Pull Request workflow
 ├── scripts/
 │   └── evaluate.py                   # Reproduces coverage.csv and model_summary.csv
 ├── data/
