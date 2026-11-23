@@ -5,6 +5,8 @@ from pathlib import Path
 
 import numpy as np
 import pandas as pd
+from joblib import Parallel, delayed, parallel_config
+from sklearn.linear_model import PoissonRegressor
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -12,6 +14,7 @@ WINDOWS = (30, 90)
 STRENGTHS = (1, 7, 28)
 SCOPES = ("device_specific", "shared")
 WEEK = 7
+WEEKDAY_FEATURES = np.eye(WEEK)
 
 
 def load_panel(path, last_day):
@@ -42,40 +45,66 @@ def weekly_levels(history):
     return (1 + events[days] - events[starts]) / (1 + valid[days] - valid[starts])
 
 
-def forecast_origin(history, weekdays, forecast_weekday, strengths):
-    """Fit weekday effects with a log offset. Only the forecast weekday is needed.
+def fit_weekday_model(weekdays, counts, exposure, strength):
+    """Fit weekday rate multipliers using the recent activity level as exposure."""
+    valid = exposure > 0
+    # One binary feature per weekday. Append one rate-1 observation per
+    # weekday so that rare or unseen weekdays shrink toward the recent level.
+    X = np.vstack([WEEKDAY_FEATURES[weekdays[valid]], WEEKDAY_FEATURES])
+    rates = np.r_[counts[valid] / exposure[valid], np.ones(WEEK)]
+    weights = np.r_[exposure[valid], np.full(WEEK, strength)]
+    model = PoissonRegressor(alpha=0, fit_intercept=False, solver="newton-cholesky", tol=1e-10)
+    model.fit(X, rates, sample_weight=weights)
+    return model
 
-    The seven categorical coefficients are separable in the Poisson likelihood.
-    One prior row per category has target=strength and exposure=strength.
-    """
+
+def forecast_origin(history, weekdays, forecast_weekday, strengths):
+    """Fit one GLM per eligible device and one GLM across all devices."""
     levels = weekly_levels(history)
     available = np.isfinite(history)
-    same_day = weekdays == forecast_weekday
-    events = np.nansum(history[same_day], axis=0)
-    exposure = np.where(available[same_day], levels[:-1][same_day], 0).sum(axis=0)
-    local_ok = available.any(axis=0)
+    exposure = np.where(available, levels[:-1], 0)
+    devices = np.flatnonzero(available.any(axis=0))
+    # Within a date all devices have identical weekday features, so their
+    # counts and exposures can be summed for the shared fit.
+    pooled_counts = np.nansum(history, axis=1)
+    pooled_exposure = exposure.sum(axis=1)
+    next_weekday = WEEKDAY_FEATURES[[forecast_weekday]]
     predictions = {}
     for strength in strengths:
-        local_factor = (events + strength) / (exposure + strength)
-        shared_factor = (events.sum() + strength) / (exposure.sum() + strength)
-        predictions[strength, "device_specific"] = np.where(local_ok, levels[-1] * local_factor, np.nan)
-        predictions[strength, "shared"] = np.where(local_ok.any(), levels[-1] * shared_factor, np.nan)
+        local = np.full(history.shape[1], np.nan)
+        shared = np.full(history.shape[1], np.nan)
+        for device in devices:
+            model = fit_weekday_model(weekdays, history[:, device], exposure[:, device], strength)
+            local[device] = levels[-1, device] * model.predict(next_weekday)[0]
+        if devices.size:
+            model = fit_weekday_model(weekdays, pooled_counts, pooled_exposure, strength)
+            shared = levels[-1] * model.predict(next_weekday)[0]
+        predictions[strength, "device_specific"] = local
+        predictions[strength, "shared"] = shared
     return predictions
 
 
-def roll(panel, split, strengths):
+def roll(panel, split, strengths, jobs=1):
     dates = panel.index
     days = dates.dayofweek.to_numpy()
     counts = panel.to_numpy(dtype=float)
     start, end = ("2026-07-01", "2026-08-31") if split == "validation" else ("2026-09-01", "2026-09-30")
     origins = np.flatnonzero((dates >= start) & (dates <= end))
     blocks = {(strength, window, scope): [] for strength in strengths for window in WINDOWS for scope in SCOPES}
-    for origin in origins:
+
+    def forecast_date(origin):
+        by_window = {}
         for window in WINDOWS:
             if origin < window:
                 raise ValueError("Incomplete calendar history")
             past = slice(origin - window, origin)
-            results = forecast_origin(counts[past], days[past], days[origin], strengths)
+            by_window[window] = forecast_origin(counts[past], days[past], days[origin], strengths)
+        return by_window
+
+    with parallel_config(backend="loky", inner_max_num_threads=1):
+        results_by_date = Parallel(n_jobs=jobs)(delayed(forecast_date)(origin) for origin in origins)
+    for by_window in results_by_date:
+        for window, results in by_window.items():
             for (strength, scope), pred in results.items():
                 blocks[strength, window, scope].append(pred)
     return dates[origins], counts[origins], {key: np.stack(values) for key, values in blocks.items()}
@@ -134,13 +163,14 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--validation-only", action="store_true")
     parser.add_argument("--output", type=Path)
+    parser.add_argument("--jobs", type=int, default=4, help="Forecast dates to fit in parallel (default: 4)")
     args = parser.parse_args()
     dest = args.output or ROOT / "reports" / ("poisson_validation" if args.validation_only else "poisson")
     dest.mkdir(parents=True, exist_ok=True)
     path = ROOT / "data/processed/daily_panel.csv.gz"
     panel = load_panel(path, "2026-08-31")
     high_cutoff = int(np.nanquantile(panel.loc[:"2026-06-30"].to_numpy(), 0.90, method="higher"))
-    dates, truth, predictions = roll(panel, "validation", STRENGTHS)
+    dates, truth, predictions = roll(panel, "validation", STRENGTHS, args.jobs)
     grid = metrics("validation", truth, predictions, high_cutoff)
     grid.to_csv(dest / "validation_grid.csv", index=False)
     # Equal weight for both scopes and both windows. Smallest strength wins a tie.
@@ -149,7 +179,7 @@ def main():
     export_split(dest, "validation", panel.columns, dates, truth, predictions, strength)
     if not args.validation_only:
         panel = load_panel(path, "2026-09-30")
-        dates, truth, predictions = roll(panel, "test", [strength])
+        dates, truth, predictions = roll(panel, "test", [strength], args.jobs)
         selected = pd.concat([selected, metrics("test", truth, predictions, high_cutoff)])
         export_split(dest, "test", panel.columns, dates, truth, predictions, strength)
     selected.to_csv(dest / "metrics.csv", index=False)

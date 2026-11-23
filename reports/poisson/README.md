@@ -4,15 +4,15 @@ The 90-day device-specific model had the lowest September MAE and RMSE. Sharing 
 
 ## Reproduce
 
-Run from the repository root with Python 3.10 or later and the supplied Clean v1 panel. The model and tests use only NumPy and pandas beyond the Python standard library. The recorded run used Python 3.13.7, NumPy 2.3.2 and pandas 2.3.2.
+Run from the repository root with Python 3.10 or later and the supplied Clean v1 panel. The model uses scikit-learn's `PoissonRegressor`, NumPy and pandas, with joblib to distribute forecast dates across CPU processes. The recorded run used Python 3.13.7, scikit-learn 1.8.0, NumPy 2.3.2, pandas 2.3.2 and joblib 1.5.3.
 
 ```sh
-python -m pip install "numpy>=1.26" "pandas>=2.2,<3"
+python -m pip install "numpy>=1.26" "pandas>=2.2,<3" "scikit-learn>=1.2" "joblib>=1.3"
 python -m unittest discover -s tests
 python src/poisson_forecast.py
 ```
 
-For a validation-only cross-check, run `python src/poisson_forecast.py --validation-only`. It writes to `reports/poisson_validation/`. Use `--output DIRECTORY` to select another destination. Read the CSVs with `dtype={"com_id": "string"}` to preserve identifiers.
+For a validation-only cross-check, run `python src/poisson_forecast.py --validation-only`. It writes to `reports/poisson_validation/`. The default is four parallel workers. Use `--jobs 1` for serial execution or `--output DIRECTORY` to select another destination. Read the CSVs with `dtype={"com_id": "string"}` to preserve identifiers.
 
 | Output | Contents |
 |---|---|
@@ -29,7 +29,9 @@ Both versions use a Poisson regression with a log link, a device-specific recent
 
 The expected count equals the recent level times a weekday multiplier. A multiplier of 1.2 raises that device's recent level by 20% for that weekday. The local model estimates seven multipliers separately for each device. The shared model estimates seven across the entire fleet while keeping each device's own recent level. The shared model pools the counts and exposures before fitting, so each device can still receive a different forecast on the same date.
 
-For one weekday, let Y be the sum of valid training counts on that weekday, and E the sum of their corresponding recent levels. The fitted multiplier is (Y + a) / (E + a), where a is the smoothing strength. This is the exact Poisson fit with a weighted pseudo-observation of rate 1 and exposure a per weekday. It shrinks sparse estimates toward a multiplier of 1. The implementation computes the coefficient for the forecast weekday directly because the seven coefficients fit independently. A local model with no valid targets anywhere in the window is marked unavailable. The shared model can still produce a fleet-based forecast for that device.
+In [`fit_weekday_model()`](../../src/poisson_forecast.py), each training row has seven binary features indicating its weekday. The estimator fits the session rate (count divided by recent activity) with recent activity as the sample weight. This gives the same weekday coefficients as a Poisson model of counts with a log-exposure offset. One extra rate-1 observation per weekday, with weight a, supplies the smoothing. The call uses `alpha=0`, seven weekday coefficients, no intercept, and the Newton–Cholesky solver. In `forecast_origin()`, the device-specific version calls `.fit()` separately for each eligible device through this helper. The shared version calls it once using the fleet's summed counts and exposures on each date. Both call `.predict()` for the forecast weekday and multiply that rate by the device's recent level. [Scikit-learn's worked exposure example](https://scikit-learn.org/stable/auto_examples/linear_model/plot_poisson_regression_non_normal_loss.html)
+
+To check a fitted coefficient by hand, add up the weekday's usable counts (Y) and their recent activity levels (E). The expected multiplier is (Y + a) / (E + a). A local model with no valid targets anywhere in the window is marked unavailable. The shared model can still produce a fleet-based forecast for that device.
 
 Validation chose a single common strength by minimizing the average of the four configurations' matched-row MAEs. Strengths 1, 7 and 28 gave 0.843800, 0.833400 and 0.828932 respectively. The run fixed **a = 28** before evaluating September. Daily refitting, the seven-day feature and this candidate grid were implementation choices. No same-day counts, monthly totals, or retrospective coverage flags are predictors.
 
@@ -54,4 +56,6 @@ The September local MAE advantage was 0.0076 sessions at 30 days and 0.0131 at 9
 
 For device `54143` on Tuesday, September 15, the 90-day window is June 17 through September 14. Its recent level was 3.375. Ten usable training Tuesdays had 41 sessions and a summed exposure of 24.957143. The local forecast was 3.375 × (41 + 28) / (24.957143 + 28) = **4.3974**. The shared forecast was **3.5524** and the panel actual was **5**. The 30-day local fit began August 16 and predicted **3.9650**.
 
-For a validation check using the standalone command, filter to the same device on August 3. The 30-day and 90-day local predictions are **5.288623** and **5.053111**, and the actual is **2**. August 1–2 remain masked calendar dates in the seven-day feature. The validation-only rerun reproduced all four exported validation tables. A separate calculation checked the archived targets and matched MAE/RMSE, plus local forecasts on July 3, August 3 and September 15 at both window lengths. Independent team review and comparisons with the team baselines are still pending.
+For a validation check using the standalone command, filter to the same device on August 3. The 30-day and 90-day local predictions are **5.288623** and **5.053111**, and the actual is **2**. August 1–2 remain masked calendar dates in the seven-day feature.
+
+We checked the scikit-learn rerun against the previous closed-form fit across all 617,504 exported rows. The largest absolute prediction difference was approximately 0.000000003 sessions. The runs agreed on all forecast keys, actuals, fit failures, and the selected smoothing strength. Independent team review and comparisons with the team baselines are still pending.

@@ -3,10 +3,20 @@ import unittest
 import numpy as np
 import pandas as pd
 
-from src.poisson_forecast import forecast_origin, roll, weekly_levels
+from src.poisson_forecast import fit_weekday_model, forecast_origin, roll, weekly_levels
 
 
 class PoissonForecastTests(unittest.TestCase):
+    def test_fitted_weekdays_match_exposure_weighted_rates(self):
+        weekdays = np.array([0, 0, 1, 2, 3])
+        counts = np.array([2, 8, 0, np.nan, 7])
+        exposure = np.array([1, 3, 4, 0, 2])
+        model = fit_weekday_model(weekdays, counts, exposure, strength=2)
+        # Monday has two observations, Tuesday has a genuine zero, Wednesday
+        # has no usable exposure and Friday through Sunday are unseen.
+        expected = [12 / 6, 2 / 6, 1, 9 / 4, 1, 1, 1]
+        np.testing.assert_allclose(model.predict(np.eye(7)), expected)
+
     def test_missing_days_age_out_and_zero_counts_have_exposure(self):
         history = np.array([[9, np.nan], [np.nan, 0], *([[np.nan, np.nan]] * 6)])
         levels = weekly_levels(history)
