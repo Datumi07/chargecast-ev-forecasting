@@ -1,0 +1,6 @@
+role,model,training_scheme,history_days,status,notes
+Primary Model (Team B),lgbm_l2_fixed,fixed_trainval_2_8,30,Primary,"Lowest overall RMSE (1.1332), lowest Busy RMSE (2.5382), lowest Busy MAE (2.0877), least under-prediction on busy days, 100% coverage (39,564 rows)."
+Daily-Refit Benchmark,lgbm_poisson_refit,rolling_daily_refit,90,Primary,"Best rolling daily-refit model on RMSE (1.1383 on 39,207 matched rows; 1.1356 on 39,466 90d rows), 99.75% coverage."
+Best Overall MAE Model,lgbm_l1_refit,rolling_daily_refit,90,Primary,"Lowest overall MAE (0.7291), but high busy-day error (Busy RMSE 2.8111, Busy Bias -2.0166)."
+Supplementary Experiments,lgbm_l2_refit_a / lgbm_l2_refit_b / lgbm_l2_refit_tuned,rolling_daily_refit,30 / 90,Supplementary,Post-inspection L2 daily-refit experiments; did not outperform Poisson 90d refit or Fixed Train+Val L2 on RMSE.
+Reference Baselines,baseline_mean7 / baseline_lag7,history_only,7,Baseline,"Simple trailing 7-day mean and same-weekday lag-7 baselines evaluated on the 36,483-row matched intersection."

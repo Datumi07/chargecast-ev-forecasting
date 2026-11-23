@@ -1,0 +1,36 @@
+eval_set,model,training_scheme,history_days,role,status,coverage_rows,coverage_pct,n_matched,MAE,RMSE,Bias,n_busy_days,Busy_MAE,Busy_RMSE,Busy_Bias,Busy_UnderPred_pct
+matched_lgbm_all,lgbm_l2_fixed,fixed_trainval_2_8,30,Primary Team B Model,Primary,39564,100.0,39207,0.7806,1.1332,0.0123,3541,2.0877,2.5382,-1.6182,82.7
+matched_lgbm_all,lgbm_l2_fixed,fixed_trainval_2_8,90,Fixed Train+Val Reference (90d),Primary,39564,100.0,39207,0.78,1.1348,-0.0018,3541,2.1085,2.5581,-1.6567,82.9
+matched_lgbm_all,lgbm_l2_fixed,fixed_train_2_6,30,Fixed Train 2-6 Reference (30d),Primary,39564,100.0,39207,0.782,1.1377,-0.0104,3541,2.1381,2.5935,-1.7522,84.4
+matched_lgbm_all,lgbm_poisson_refit,rolling_daily_refit,90,Primary Daily-Refit Benchmark,Primary,39466,99.75,39207,0.7764,1.1383,-0.0031,3541,2.1094,2.573,-1.6606,82.7
+matched_lgbm_all,lgbm_l2_refit_a,rolling_daily_refit,90,"L2 Daily Refit (Variant A, 90d)",Supplementary,39466,99.75,39207,0.7786,1.1387,0.0027,3541,2.1008,2.5651,-1.6463,83.0
+matched_lgbm_all,lgbm_l2_refit_tuned,rolling_daily_refit,90,"L2 Daily Refit (Tuned lambda=5, 90d)",Supplementary,39466,99.75,39207,0.7786,1.1389,0.0029,3541,2.0997,2.5636,-1.6449,82.8
+matched_lgbm_all,lgbm_l2_fixed,fixed_train_2_6,90,Fixed Train 2-6 Reference (90d),Primary,39564,100.0,39207,0.7818,1.1397,-0.0235,3541,2.155,2.6106,-1.771,84.3
+matched_lgbm_all,lgbm_l2_refit_b,rolling_daily_refit,90,"L2 Daily Refit (Variant B, 90d)",Supplementary,39466,99.75,39207,0.7849,1.1403,0.0034,3541,2.1167,2.5743,-1.6913,83.5
+matched_lgbm_all,lgbm_l2_refit_b,rolling_daily_refit,30,"L2 Daily Refit (Variant B, 30d)",Supplementary,39207,99.1,39207,0.7932,1.1606,-0.0119,3541,2.2042,2.6835,-1.8034,84.2
+matched_lgbm_all,lgbm_l2_refit_a,rolling_daily_refit,30,"L2 Daily Refit (Variant A, 30d)",Supplementary,39207,99.1,39207,0.7902,1.1614,-0.0121,3541,2.1549,2.6267,-1.7106,83.4
+matched_lgbm_all,lgbm_poisson_refit,rolling_daily_refit,30,Daily-Refit Poisson (30d),Primary,39207,99.1,39207,0.787,1.1622,-0.0266,3541,2.1838,2.6581,-1.7474,83.8
+matched_lgbm_all,lgbm_l1_refit,rolling_daily_refit,90,Best MAE Model (90d),Primary,39466,99.75,39207,0.7291,1.19,-0.2079,3541,2.3297,2.8111,-2.0166,86.4
+matched_lgbm_all,lgbm_l1_refit,rolling_daily_refit,30,Daily-Refit L1 (30d),Primary,39207,99.1,39207,0.7441,1.2176,-0.2036,3541,2.377,2.896,-2.0513,86.3
+matched_lgbm_90d,lgbm_l2_fixed,fixed_trainval_2_8,90,Fixed Train+Val Reference (90d),Primary,39564,100.0,39466,0.7772,1.1321,-0.0013,3543,2.1093,2.5589,-1.6578,82.9
+matched_lgbm_90d,lgbm_poisson_refit,rolling_daily_refit,90,Primary Daily-Refit Benchmark,Primary,39466,99.75,39466,0.7736,1.1356,-0.0027,3543,2.1102,2.5738,-1.6617,82.7
+matched_lgbm_90d,lgbm_l2_refit_a,rolling_daily_refit,90,"L2 Daily Refit (Variant A, 90d)",Supplementary,39466,99.75,39466,0.7758,1.1361,0.003,3543,2.1016,2.5659,-1.6474,83.0
+matched_lgbm_90d,lgbm_l2_refit_tuned,rolling_daily_refit,90,"L2 Daily Refit (Tuned lambda=5, 90d)",Supplementary,39466,99.75,39466,0.7758,1.1362,0.0033,3543,2.1005,2.5644,-1.6459,82.8
+matched_lgbm_90d,lgbm_l2_fixed,fixed_train_2_6,90,Fixed Train 2-6 Reference (90d),Primary,39564,100.0,39466,0.779,1.137,-0.0228,3543,2.1558,2.6114,-1.772,84.3
+matched_lgbm_90d,lgbm_l2_refit_b,rolling_daily_refit,90,"L2 Daily Refit (Variant B, 90d)",Supplementary,39466,99.75,39466,0.7821,1.1376,0.0038,3543,2.1176,2.5752,-1.6924,83.5
+matched_lgbm_90d,lgbm_l1_refit,rolling_daily_refit,90,Best MAE Model (90d),Primary,39466,99.75,39466,0.7257,1.1872,-0.2074,3543,2.3305,2.8118,-2.0175,86.4
+matched_all_with_baselines,lgbm_l2_fixed,fixed_trainval_2_8,30,Primary Team B Model,Primary,39564,100.0,36483,0.7785,1.1304,0.0126,3281,2.0869,2.5328,-1.6164,82.7
+matched_all_with_baselines,lgbm_l2_fixed,fixed_trainval_2_8,90,Fixed Train+Val Reference (90d),Primary,39564,100.0,36483,0.778,1.1318,-0.0011,3281,2.1061,2.5517,-1.6548,82.9
+matched_all_with_baselines,lgbm_l2_fixed,fixed_train_2_6,30,Fixed Train 2-6 Reference (30d),Primary,39564,100.0,36483,0.7797,1.1344,-0.0099,3281,2.1346,2.5863,-1.7506,84.5
+matched_all_with_baselines,lgbm_l2_refit_tuned,rolling_daily_refit,90,"L2 Daily Refit (Tuned lambda=5, 90d)",Supplementary,39466,99.75,36483,0.7769,1.1358,0.0045,3281,2.0979,2.5566,-1.6413,82.8
+matched_all_with_baselines,lgbm_poisson_refit,rolling_daily_refit,90,Primary Daily-Refit Benchmark,Primary,39466,99.75,36483,0.7745,1.1358,-0.0029,3281,2.1098,2.5684,-1.6615,82.7
+matched_all_with_baselines,lgbm_l2_refit_a,rolling_daily_refit,90,"L2 Daily Refit (Variant A, 90d)",Supplementary,39466,99.75,36483,0.7769,1.1359,0.0042,3281,2.0992,2.5587,-1.6433,83.0
+matched_all_with_baselines,lgbm_l2_fixed,fixed_train_2_6,90,Fixed Train 2-6 Reference (90d),Primary,39564,100.0,36483,0.7798,1.1365,-0.0229,3281,2.1519,2.6034,-1.7694,84.2
+matched_all_with_baselines,lgbm_l2_refit_b,rolling_daily_refit,90,"L2 Daily Refit (Variant B, 90d)",Supplementary,39466,99.75,36483,0.7832,1.1374,0.005,3281,2.1142,2.5667,-1.6867,83.6
+matched_all_with_baselines,lgbm_l2_refit_b,rolling_daily_refit,30,"L2 Daily Refit (Variant B, 30d)",Supplementary,39207,99.1,36483,0.7912,1.1583,-0.0113,3281,2.2026,2.6789,-1.7996,84.3
+matched_all_with_baselines,lgbm_l2_refit_a,rolling_daily_refit,30,"L2 Daily Refit (Variant A, 30d)",Supplementary,39207,99.1,36483,0.7882,1.1586,-0.0127,3281,2.1536,2.6212,-1.7101,83.4
+matched_all_with_baselines,lgbm_poisson_refit,rolling_daily_refit,30,Daily-Refit Poisson (30d),Primary,39207,99.1,36483,0.7848,1.16,-0.0276,3281,2.1858,2.6572,-1.7479,83.8
+matched_all_with_baselines,lgbm_l1_refit,rolling_daily_refit,90,Best MAE Model (90d),Primary,39466,99.75,36483,0.7276,1.1869,-0.2062,3281,2.3289,2.8044,-2.0173,86.5
+matched_all_with_baselines,baseline_mean7,history_only,7,Baseline (7-Day Trailing Mean),Baseline,39429,99.66,36483,0.8012,1.2028,-0.0012,3281,2.1576,2.6427,-1.6439,80.8
+matched_all_with_baselines,lgbm_l1_refit,rolling_daily_refit,30,Daily-Refit L1 (30d),Primary,39207,99.1,36483,0.7419,1.2146,-0.2043,3281,2.3781,2.8923,-2.0528,86.3
+matched_all_with_baselines,baseline_lag7,history_only,7,Baseline (Same Weekday Lag-7),Baseline,36483,92.21,36483,0.9382,1.5531,0.0044,3281,2.552,3.1956,-1.5315,67.6

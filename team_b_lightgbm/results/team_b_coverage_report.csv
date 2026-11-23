@@ -1,0 +1,16 @@
+model,training_scheme,history_days,role,status,valid_rows,eligible_test_rows,coverage_pct,min_date,max_date,n_devices
+baseline_lag7,history_only,7,Baseline (Same Weekday Lag-7),Baseline,36483,39564,92.21,2026-09-02,2026-09-29,1413
+baseline_mean7,history_only,7,Baseline (7-Day Trailing Mean),Baseline,39429,39564,99.66,2026-09-02,2026-09-29,1413
+lgbm_l1_refit,rolling_daily_refit,30,Daily-Refit L1 (30d),Primary,39207,39564,99.1,2026-09-02,2026-09-29,1413
+lgbm_l1_refit,rolling_daily_refit,90,Best MAE Model (90d),Primary,39466,39564,99.75,2026-09-02,2026-09-29,1413
+lgbm_l2_fixed,fixed_train_2_6,30,Fixed Train 2-6 Reference (30d),Primary,39564,39564,100.0,2026-09-02,2026-09-29,1413
+lgbm_l2_fixed,fixed_train_2_6,90,Fixed Train 2-6 Reference (90d),Primary,39564,39564,100.0,2026-09-02,2026-09-29,1413
+lgbm_l2_fixed,fixed_trainval_2_8,30,Primary Team B Model,Primary,39564,39564,100.0,2026-09-02,2026-09-29,1413
+lgbm_l2_fixed,fixed_trainval_2_8,90,Fixed Train+Val Reference (90d),Primary,39564,39564,100.0,2026-09-02,2026-09-29,1413
+lgbm_l2_refit_a,rolling_daily_refit,30,"L2 Daily Refit (Variant A, 30d)",Supplementary,39207,39564,99.1,2026-09-02,2026-09-29,1413
+lgbm_l2_refit_a,rolling_daily_refit,90,"L2 Daily Refit (Variant A, 90d)",Supplementary,39466,39564,99.75,2026-09-02,2026-09-29,1413
+lgbm_l2_refit_b,rolling_daily_refit,30,"L2 Daily Refit (Variant B, 30d)",Supplementary,39207,39564,99.1,2026-09-02,2026-09-29,1413
+lgbm_l2_refit_b,rolling_daily_refit,90,"L2 Daily Refit (Variant B, 90d)",Supplementary,39466,39564,99.75,2026-09-02,2026-09-29,1413
+lgbm_l2_refit_tuned,rolling_daily_refit,90,"L2 Daily Refit (Tuned lambda=5, 90d)",Supplementary,39466,39564,99.75,2026-09-02,2026-09-29,1413
+lgbm_poisson_refit,rolling_daily_refit,30,Daily-Refit Poisson (30d),Primary,39207,39564,99.1,2026-09-02,2026-09-29,1413
+lgbm_poisson_refit,rolling_daily_refit,90,Primary Daily-Refit Benchmark,Primary,39466,39564,99.75,2026-09-02,2026-09-29,1413
