@@ -1,0 +1,86 @@
+GROUP A - POISSON REGRESSION
+
+Daily refits; 30/90 calendar-day bounds; identical features and forecast dates.
+All four alpha settings selected on validation before running test.
+Read README.md (Group A section) for commands, features and exclusions.
+
+MATCHED-ROW RESULTS (sessions/day)
+ history_days      split  training_scope population  n_total  n_scored  n_excluded          mae         rmse  high_usage_threshold  n_high  high_mean_shortfall  high_underprediction_rate
+           30       test device_specific    matched    39564     36126        3438 8.330836e-01 1.419054e+00                   4.0    3277             1.866713                   0.790052
+           30       test          shared    matched    39564     36126        3438 1.003897e+00 2.130610e+00                   4.0    3277             3.084197                   0.949954
+           30 validation device_specific    matched    81912     73331        8581 8.940606e+06 2.421089e+09                   4.0    7094             1.955424                   0.799549
+           30 validation          shared    matched    81912     73331        8581 1.047794e+00 2.372979e+00                   4.0    7094             3.192180                   0.959684
+           90       test device_specific    matched    39564     36385        3179 8.067342e-01 1.184325e+00                   4.0    3281             1.874329                   0.815300
+           90       test          shared    matched    39564     36385        3179 1.003015e+00 1.792936e+00                   4.0    3281             3.165830                   0.959159
+           90 validation device_specific    matched    81912     73954        7958 8.206656e-01 1.216344e+00                   4.0    7102             1.953129                   0.827091
+           90 validation          shared    matched    81912     73954        7958 1.043116e+00 2.026037e+00                   4.0    7102             3.253963                   0.966207
+
+DOES SHARING HELP?
+test 30d: shared MAE 1.003897, local 0.833084; shared MAE reduction -20.50%; matched rows 36,126.
+validation 30d: shared MAE 1.047794, local 8940606.122442; shared MAE reduction 100.00%; matched rows 73,331.
+test 90d: shared MAE 1.003015, local 0.806734; shared MAE reduction -24.33%; matched rows 36,385.
+validation 90d: shared MAE 1.043116, local 0.820666; shared MAE reduction -27.11%; matched rows 73,954.
+
+ERROR PATTERNS
+test 30d device_specific: median absolute error 0.5465; max forecast 73.221; zero-day mean forecast 0.5773; overall signed error 0.0404. See high-day shortfall/rate above for busy-day underprediction.
+test 30d shared: median absolute error 0.8281; max forecast 155.077; zero-day mean forecast 0.8973; overall signed error -0.0084. See high-day shortfall/rate above for busy-day underprediction.
+test 90d device_specific: median absolute error 0.5487; max forecast 29.0998; zero-day mean forecast 0.5952; overall signed error 0.0194. See high-day shortfall/rate above for busy-day underprediction.
+test 90d shared: median absolute error 0.8532; max forecast 101.807; zero-day mean forecast 0.9261; overall signed error -0.0085. See high-day shortfall/rate above for busy-day underprediction.
+validation 30d device_specific: median absolute error 0.5587; max forecast 6.55623e+11; zero-day mean forecast 0.6333; overall signed error 8940605.2762. See high-day shortfall/rate above for busy-day underprediction.
+validation 30d shared: median absolute error 0.8674; max forecast 163.839; zero-day mean forecast 0.9393; overall signed error -0.0071. See high-day shortfall/rate above for busy-day underprediction.
+validation 90d device_specific: median absolute error 0.5575; max forecast 34.4265; zero-day mean forecast 0.5941; overall signed error -0.0034. See high-day shortfall/rate above for busy-day underprediction.
+validation 90d shared: median absolute error 0.8789; max forecast 119.902; zero-day mean forecast 0.9512; overall signed error -0.0171. See high-day shortfall/rate above for busy-day underprediction.
+Short-window local models can extrapolate to extreme finite counts through the exponential link.
+Compare median errors with MAE/RMSE and inspect the largest-error rows below. Extreme outputs are retained,
+not clipped after evaluation. Small per-device samples/feature variation are a likely source of instability.
+Any broader alpha grid, transformed predictors or constrained predictions require a new validation protocol.
+
+LARGEST ABSOLUTE ERRORS (available rows; descriptive, not tuning)
+ com_id reported_date      split  history_days  training_scope  y_true       y_pred  absolute_error
+  62387    2026-08-27 validation            30 device_specific     2.0 6.556235e+11    6.556235e+11
+   4607    2026-07-27 validation            30 device_specific     2.0 2.387448e+04    2.387248e+04
+  60403    2026-07-24 validation            30 device_specific     4.0 6.284345e+03    6.280345e+03
+  62999    2026-07-25 validation            30 device_specific     4.0 5.631964e+03    5.627964e+03
+FC18614    2026-07-09 validation            30 device_specific     0.0 1.512949e+03    1.512949e+03
+  12493    2026-07-25 validation            30 device_specific     1.0 8.184671e+02    8.174671e+02
+   4775    2026-08-15 validation            30 device_specific     0.0 2.341260e+02    2.341260e+02
+  50795    2026-07-17 validation            30          shared    20.0 1.638390e+02    1.438390e+02
+
+COVERAGE / FAILED FITS
+history_days  split       training_scope   status                    
+30            test        device_specific  all_zero_boundary               864
+                                           fewer_than_7_training_rows      357
+                                           missing_forecast_features      3081
+                                           ok                            35262
+                          shared           missing_forecast_features      3081
+                                           ok                            36483
+              validation  device_specific  all_zero_boundary              2221
+                                           fewer_than_7_training_rows      854
+                                           missing_forecast_features      7727
+                                           ok                            71110
+                          shared           missing_forecast_features      7727
+                                           ok                            74185
+90            test        device_specific  all_zero_boundary               232
+                                           fewer_than_7_training_rows       98
+                                           missing_forecast_features      3081
+                                           ok                            36153
+                          shared           missing_forecast_features      3081
+                                           ok                            36483
+              validation  device_specific  all_zero_boundary               513
+                                           fewer_than_7_training_rows      231
+                                           missing_forecast_features      7727
+                                           ok                            73441
+                          shared           missing_forecast_features      7727
+                                           ok                            74185
+
+LIMITATIONS / HANDOFF
+All-zero histories use the exact-zero Poisson boundary limit, logged separately from fitted models.
+Shared model pools four predictors without device fixed effects; conclusions apply to this specification.
+High usage is the frozen pooled training 90th percentile, not a test-derived threshold.
+Retrospective coverage flags and assumed next-day label availability limit operational interpretation.
+Earlier seven window days are context only; usable training-label spans are at most 23/83 days.
+Masked targets are excluded before forecast export; missing predictions remain in forecasts.csv.
+No baseline or LightGBM comparison claimed; those runs belong to the other assigned owners.
+Automated reproducibility checks are not independent teammate reproduction.
+Pending human steps: Group B validation cross-check, authentic member commits, branch/PR sharing.
+No GitHub push performed.

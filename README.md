@@ -4,7 +4,7 @@
 
 ChargeCast forecasts the number of recorded charging sessions starting on the next day at an individual charging device (`com_id`) in the ChargePlace Scotland (CPS) network. We investigate whether a shared model trained across devices improves forecasting over device-specific models under simulated **30-day and 90-day history windows** before each forecast date. The dataset spans 395 calendar days, providing multiple forecast dates for chronological evaluation.
 
-The current release contains a reproducible cleaning pipeline and a cleaned daily panel. **Forecasting models, evaluation results and an interactive application have not yet been implemented.**
+This branch includes the reproducible cleaning pipeline, cleaned daily panel and Group A's rolling Poisson forecasts. See the [Poisson handoff](reports/poisson/README.md) for the run command, forecast CSV, evaluation and worked examples.
 
 ## Research questions
 
@@ -54,6 +54,8 @@ See [the cleaning methodology](docs/data_cleaning.md), [daily data dictionary](d
 | `data/processed/sessions_clean.csv.gz` | Full session-level output, bundled in delivery ZIP but excluded from Git |
 | `src/prepare_data.py` | Rebuild cleaning outputs from original workbooks |
 | `src/load_example.py` | Load data and demonstrate time-safe lag creation |
+| `src/poisson_forecast.py` | Fit and evaluate the four Group A Poisson configurations |
+| `reports/poisson/` | Row-level forecasts, fit failures, validation grid, results and reproduction instructions |
 | `docs/` | Cleaning decisions and column dictionaries |
 | `reports/data_quality/` | Audit counts, excluded IDs, removed duplicates and input fingerprints |
 
@@ -119,7 +121,7 @@ The pipeline asserts unique daily keys, nonnegative available targets, masked un
 | Test | September 2026 |
 
 - Start with same-weekday-last-week and historical-average baselines.
-- Candidate models: Poisson regression and LightGBM; model selection remains pending.
+- Group A evaluated device-specific and shared Poisson regression. Comparison with LightGBM and the baselines remains pending.
 - Compare shared and local models using identical forecast dates, devices and 30/90-day calendar windows. Define the rolling retraining schedule before experimentation.
 - Use chronological evaluation; never random-split device-day rows.
 - Compute lag/rolling statistics only from prior dates. Keep missing history visible and report coverage requirements.
@@ -148,6 +150,17 @@ Individual responsibilities will be finalised during project planning.
 
 - Research scope defined.
 - Clean v1 data, reproducible preparation code and quality documentation supplied.
-- EDA, feature engineering, model comparisons and pilot implementation are next.
+- Group A's Poisson runs are complete. Cross-group comparisons and pilot implementation remain pending.
 
 This repository is maintained for DATA2010 at VinUniversity. Cite CPS as the original data source and describe the cohort, inferred zeros, exclusions and timestamp limitations in the final report. Public access alone is not a substitute for checking source reuse terms before wider redistribution.
+
+
+## Integrated model results
+
+- [Primary Poisson experiment](reports/poisson/README.md): recent device activity as an offset and shared or local weekday effects, with smoothing chosen on validation.
+- [Alternative Poisson experiment](reports/group_a/results.txt): four-predictor PoissonRegressor with shared or device-specific fitting. The short local window has extreme validation forecasts that remain included in the scores.
+- [Feature pipeline](docs/feature_engineering.md): run `python src/build_features.py` from the repository root.
+- [Ridge experiment](reports/ridge/README.md): validation selection and matched baseline comparisons. Run `python src/run_ridge.py`.
+- [LightGBM experiment](team_b_lightgbm/README.md): fixed and daily-refit forecasts.
+
+The two Poisson implementations are separate experiments. Recompute cross-family scores on identical device-date keys before placing them in the final report.
