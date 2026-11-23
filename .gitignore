@@ -16,6 +16,8 @@ data/processed/*
 !data/processed/README.md
 !data/processed/daily_panel.csv.gz
 !data/processed/registry_monthly.csv
+# Local team assignment
+/docs/ChargeCast_Progress_and_Team_Assignments.docx
 # Model artifacts
 *.pkl
 *.pickle
